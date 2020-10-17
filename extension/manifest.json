@@ -1,0 +1,16 @@
+{   
+"name": "Sustainibility Scanner",    
+"version": "1.0",    
+"description": "Making Ecommerce more ethical",    
+"manifest_version": 2, 
+"content_scripts" : [{
+     "matches": ["<all_urls>"],
+	 "js": ["content.js"]
+}],
+"options_page": "options.html",
+"browser_action": {
+   "default_popup": "popup.html",
+   "default_title": "Sustainibility Scanner",
+   "default_icon": "earth.png"
+ }
+}
