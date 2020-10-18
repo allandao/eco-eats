@@ -1,9 +1,14 @@
 # vim: set sw=4 noet ts=4 fileencoding=utf-8:
 
 import pandas as pd
+import numpy as np
 import os
 import logging
 import pdb
+import nltk 
+import re
+from nltk.corpus import stopwords 
+set(stopwords.words('english'))
 
 def setup_logger(logging_level, log_file):
 	''' Args: logger supports levels DEBUG, INFO, WARNING, ERROR, CRITICAL.
@@ -25,7 +30,7 @@ class Processor():
 	to match to even more products on Amazon.
 	'''
 
-	#XXX: will need to access kaggle data through server eventually
+	#XXX: will need to access kaggle data through server eventually??
 	def __init__(self, logging_level, data_path):
 		# Sample data: {“title”: “SOUR CREAM, 365 WFM, UNFI, 12-16OZ”, 
 		# “ingredients” : “CULTURED PASTEURIZED GRADE A ORGANIC MILK, 
@@ -73,27 +78,149 @@ class Processor():
 		title = request_data['title']	
 		# kaggle data titles
 		foods = df['Food product']
+		ingredients = request_data['ingredients']
 		self.log.info('kaggle foods: {}'.format(foods))
 		# iterate over kaggle food titles and try to match it 
 		# Simple way: re expression matching
 		# More complex way: NLP processing to match to related foods if 
 		# exact food is not found
-		for i, food_title in enumerate(foods):
-			#XXX this may use Soymilk for milk instead of Milk for milk...
-			# need more robust matching
-			if title in food_title:
-				pdb.set_trace()
-				# Integer based row slicing
-				row_stats = df.iloc[i]
-				self.log.info(row_stats)
+		row_stats = {}
+		matches_i = {}
+
+		matches_i = self.match_titles(title, foods, matches_i)
+		
+		# if only one match was found between amazon product 
+		# and dataset
+		if len(matches_i) == 1:
+			match_i = list(matches_i.values())[0]
+			# Integer based row slicing
+			row_stats = df.iloc[match_i]
+		else:
+			# Check ingredients -->
+			row_stats = self.match_ingredients(
+					df, ingredients, matches_i)
+			pdb.set_trace()
+		self.log.info('row_stats: {}'.format(row_stats))
 
 		return row_stats
+
+	def match_titles(self, title, foods, matches_i):
+		'''
+		Loops through kaggle food titles and compare with amazon title.
+		Updates matches_i accordingly. 
+		Ex: title = 'Apple', foods = ['Apples', 'Bananas'], matches_i = {}
+		returns matches_i = {'Apples' : 0}
+		'''
+		# Loop through all kaggle titles
+		for i, food_title in enumerate(foods):
+			title = title.lower()
+			food_title = food_title.lower()
+			#XXX this may use Soymilk for milk instead of Milk for milk...
+			# need more robust matching
+			tokenized_title = self.tokenize([title])
+			#for 
+			if title in food_title or food_title in title:
+				matches_i[food_title] = i
+
+		return matches_i
+
+
+	def match_ingredients(self, df, ingredients, matches_i):
+		'''
+		This function uses the ingredients list, turns it into a bag
+		of words array sorted by the highest frequency words to lowest.
+		It then uses that bag of ingredient frequencies to compare to the
+		kaggle food titles. The soonest match found is used to get
+		row_stats.
+		'''
+
+		row_stats = {}
+		# bag of words(ingredients)
+		tokenized_ingr = self.tokenize([ingredients])
+		matches_titles = list(matches_i.keys())
+		tokenized_matches = self.tokenize(matches_titles)
+		freq_vector = self.get_ingr_frequency_vector(
+				tokenized_matches, tokenized_ingr)
+		# highest to lowest frequencies of ingredients words 
+		# that match titles
+		highest_match = max(freq_vector)
+		#XXX what if tied??
+		if (all(freq_vector) == 0):
+			for i, freq in freq_vector:
+				if freq == highest_match:
+					match_title = tokenized_matches[i]
+					match_i = matches_i[match_title]
+					row_stats = df.iloc[match_i]
+		pdb.set_trace()
+		# sort bag of words to highest frequency first
+		# List comprehension
+		# matches_titles = [foods[i] for i in matches_i]
+		# for higher_freq_word in bag_of_words:
+			# for match, df_index in matches_titles:
+				# if higher_freq_word in match:
+					# row_stats = df.iloc[df_index]
+					# break
+
+				# if no matches were found in the ingredients
+				# else
+					# return empty row_stats because no foods matched the
+					# amazon searched food
+		return row_stats
+
+
+	# SOURCE: https://www.freecodecamp.org/news/an-introduction-to-bag-of-words-and-how-to-code-it-in-python-for-nlp-282e87a9da04/
+	def word_extraction(self, sentence):
+		ignore = ['a', "the", "is"]
+		words = re.sub("[^\w]", " ", sentence).split()
+		cleaned_text = [w.lower() for w in words if w not in ignore]
+		return cleaned_text
+
+	def tokenize(self, all_sentences):    
+		token_words = []    
+		# Appends cleaned, tokenized words to the array token_words.
+		# Represents tokenized words of all sentences passed combined into
+		# one array
+		for sentence in all_sentences:        
+			cleaned_words = self.word_extraction(sentence)
+			token_words.extend(cleaned_words)
+		#pdb.set_trace()
+		#token_words = sorted(list(set(token_words)))
+		return token_words
+
+	def get_frequency_vector(self, tokenized1, tokenized2):
+		longer_text = max(len(tokenized1), len(tokenized2))
+		bag_vector = np.zeros(longer_text)
+		for word1 in tokenized1:
+			for i, word2 in enumerate(tokenized2):
+				if word2 == word1:
+					bag_vector[i] += 1
+					self.log.info("{0}\n{1}\n".format(
+							sentence, numpy.array(bag_vector)))
+		return bag_vector
+
+	def get_ingr_frequency_vector(self, token_matches, token_ingr):
+		'''
+		Returns vector of number of matches with token_ingr for
+		each matched title in token_matches
+		Ex: 
+		token_matches = ['apple', 'applemilk'], token_ingr = ['applemilk', 
+		'applemilk', 'sugar']
+		bag_vector = [0, 2]
+		'''
+		bag_vector = np.zeros(len(token_matches))
+		for i, word1 in enumerate(token_matches):
+			for word2 in token_ingr:
+				if word2 == word1:
+					bag_vector[i] += 1
+					self.log.info("{0}\n{1}\n".format(
+							sentence, numpy.array(bag_vector)))
+		return bag_vector
 
 
 if __name__ == '__main__':
 	data_path = './Food_Production.csv'
 	logging_level = logging.INFO
 	proc = Processor(logging_level, data_path)
-	proc.match_to_dataset(proc.df, proc.request_data)
+	row_stats = proc.match_to_dataset(proc.df, proc.request_data)
 		
 
