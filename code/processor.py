@@ -36,7 +36,7 @@ class Processor():
 		# “ingredients” : “CULTURED PASTEURIZED GRADE A ORGANIC MILK, 
 		# PASTEURIZED ORGANIC CREAM, MICROBIAL ENZYMES”}
 		#XXX hook up to flask later
-		self.request_data = {'title' : 'milk', 'ingredients' : 'dairy'}
+		self.request_data = {'title' : 'milk', 'ingredients' : 'dairy milk'}
 		#self.data_path = data_path
 		self.log = setup_logger(logging_level, './log.log')
 		# Dataset from Kaggle
@@ -95,13 +95,21 @@ class Processor():
 			match_i = list(matches_i.values())[0]
 			# Integer based row slicing
 			row_stats = df.iloc[match_i]
-		else:
+
+		# To break ties between matches 
+		elif len(matches_i) > 1:
 			# Check ingredients -->
 			row_stats = self.match_ingredients(
 					df, ingredients, matches_i)
-			pdb.set_trace()
-		self.log.info('row_stats: {}'.format(row_stats))
 
+		#XXX what is matches_i is empty???
+		# To find matches through ingredients if none came up
+		else: 
+			#XXX won't work b/c foods isn't a dict like matches_i, with
+			# it's index as a value in dict
+			#self.match_ingredients(df, ingredients, foods)
+			
+		self.log.debug('row_stats: {}'.format(row_stats))
 		return row_stats
 
 	def match_titles(self, title, foods, matches_i):
@@ -115,18 +123,54 @@ class Processor():
 		for i, food_title in enumerate(foods):
 			title = title.lower()
 			food_title = food_title.lower()
-			#XXX this may use Soymilk for milk instead of Milk for milk...
-			# need more robust matching
-			tokenized_title = self.tokenize([title])
-			#for 
-			if title in food_title or food_title in title:
+			#if title in food_title or food_title in title:
+			if self.check_tokenized_matches(title, food_title):
 				matches_i[food_title] = i
 
 		return matches_i
 
+	def check_tokenized_matches(self, title, food_title):
+		'''
+		Returns whether any words in the Amazon title matched any words in
+		a given Kaggle food title
+		'''
+		match = False
+		tokenized_title = self.tokenize([title])
+		tokenized_food_title = self.tokenize([food_title])
+		for word1 in tokenized_title:
+			for word2 in tokenized_food_title:
+				if word1 == word2:
+					pdb.set_trace()
+					match = True
+		return match
+
+#
+#	def match_unmatched_ingredients(self, ):
+#		# Need to compare most frequent?? ingredients to every 
+#		# word in every food in food_titles, food title 
+#		# with most matches to ingredient wins
+#
+#		#most_freq_ingredient = [0:9]
+#		# Amazon
+#		for ingr in tokenized_ingredients:
+#			# Kaggle
+#			#freq_lists
+#			for food in food_titles:
+#				food = self.tokenize(food)
+#				#get freq vector of how many times
+
 
 	def match_ingredients(self, df, ingredients, matches_i):
 		'''
+		Params:
+			df: pandas df of Food_Production.csv
+			ingredients: string of ingredients
+				Ex: 'milk, flour, sugar'
+			matches_i: dictionary with matching food title and 
+				its corresponding index in df food_titles
+				Ex: {'milk' : 3, 'soymilk' : 40}
+		Returns:
+			row_stats = {'Food product' : 'Milk', 'Land use' : '0.5'...}
 		This function uses the ingredients list, turns it into a bag
 		of words array sorted by the highest frequency words to lowest.
 		It then uses that bag of ingredient frequencies to compare to the
@@ -145,13 +189,18 @@ class Processor():
 		# that match titles
 		highest_match = max(freq_vector)
 		#XXX what if tied??
-		if (all(freq_vector) == 0):
-			for i, freq in freq_vector:
+		#NOTE: if frequencies are tied, this uses the last i 
+		# value in tokenized_matches for row_stats. Not great...
+		zero_freq_vector = [0 for i in range(len(freq_vector))]
+		if (np.array_equal(freq_vector, zero_freq_vector)):
+			self.log.info("\nNo ingredient matches were found!!\n")
+		else :
+			self.log.info("\nIngredient match found!\n")
+			for i, freq in enumerate(freq_vector):
 				if freq == highest_match:
 					match_title = tokenized_matches[i]
 					match_i = matches_i[match_title]
 					row_stats = df.iloc[match_i]
-		pdb.set_trace()
 		# sort bag of words to highest frequency first
 		# List comprehension
 		# matches_titles = [foods[i] for i in matches_i]
@@ -202,6 +251,8 @@ class Processor():
 		'''
 		Returns vector of number of matches with token_ingr for
 		each matched title in token_matches
+		Knowing that token_matches was passed first allows us to assume
+		bag_vector indices correspond to token_matches indices
 		Ex: 
 		token_matches = ['apple', 'applemilk'], token_ingr = ['applemilk', 
 		'applemilk', 'sugar']
@@ -212,14 +263,13 @@ class Processor():
 			for word2 in token_ingr:
 				if word2 == word1:
 					bag_vector[i] += 1
-					self.log.info("{0}\n{1}\n".format(
-							sentence, numpy.array(bag_vector)))
+					self.log.debug("bag_vector: ".format(bag_vector))
 		return bag_vector
 
 
 if __name__ == '__main__':
 	data_path = './Food_Production.csv'
-	logging_level = logging.INFO
+	logging_level = logging.DEBUG
 	proc = Processor(logging_level, data_path)
 	row_stats = proc.match_to_dataset(proc.df, proc.request_data)
 		
