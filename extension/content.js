@@ -24,9 +24,10 @@ function checkStatus(response) {
 
 function displayData(responseData) {
   responseData["total emissions with eutrophying"] = responseData["Total_emissions"].toFixed(2);
-  sessionStorage.setItem("response", responseData);
+  let foodTitle = responseData["Food product"];
   let ecoEffect = document.createElement("li");
-  ecoEffect.innerHTML = "<a href=\"" + BASE_URL + "table" + "\"><b>EcoEats Info:</b></a> ";
+  console.log(foodTitle);
+  ecoEffect.innerHTML = "<a href=\"" + BASE_URL + "table?food=" + foodTitle + "\"><b>EcoEats Info:</b></a> ";
   if(responseData.title_used == false){
     ecoEffct.innerHTML += + "Unable to find data for this specific product, but main ingredient ";
   }
@@ -34,6 +35,7 @@ function displayData(responseData) {
      responseData["Total_emissions"] + " kilograms of CO-2 equivalent per kilogram of product";
   aboutList.appendChild(ecoEffect)
 }
+
 
 function id(idName) {
   return document.getElementById(idName);
