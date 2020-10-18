@@ -1,0 +1,16 @@
+{
+"name": "EcoEats",
+"version": "1.0",
+"description": "Displays Carbon footprint of amazon food products",
+"manifest_version": 2,
+"content_scripts" : [{
+     "matches": ["https://www.amazon.com/gp/product/*"],
+	 "js": ["content.js"]
+}],
+"options_page": "options.html",
+"browser_action": {
+   "default_popup": "popup.html",
+   "default_title": "Sustainibility Scanner",
+   "default_icon": "earth.png"
+ }
+}
