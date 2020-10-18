@@ -5,6 +5,7 @@ We achieve this with one simple download, showing you the carbon footprint of va
 EcoEats is powered by Flask, Python, and Javascript and various libraries.
 
 ## Installation
+Chrome instructions below
 1. Open Chrome, click Chrome's menu (three dots on the top right corner) > More Tools > Extensions.
 2. Enable Developer mode via the toggle on the Extensions page.
 3. Download or clone this repository before this step.
