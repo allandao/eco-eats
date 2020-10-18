@@ -1,13 +1,11 @@
-// The code for the EcoEats extension. Runs in Amazon product pages.
-const BASE_URL = "https://caaatdubhacks.pythonanywhere.com/"
+console.log("loaded")
+let item = id("productTitle").textContent.trim()
 
-let item = encodeURI(id("productTitle").textContent.trim())
 let aboutList = qs("#feature-bullets > ul")
-let ingredient = encodeURI(qs("#important-information > div").textContent.trim().substring(11).trim())
 
+let ingredient = qs("#important-information > div").textContent.trim().substring(11).trim()
 
-
-fetch(BASE_URL + "endpoint")
+fetch("https://caaatdubhacks.pythonanywhere.com/api")
   .then(checkStatus)
   .then(JSON.parse)
   .then(displayData)
@@ -23,15 +21,17 @@ function checkStatus(response) {
 }
 
 function displayData(responseData) {
-  responseData["total emissions with eutrophying"] = responseData["total emissions with eutrophying"].toFixed(2);
-  sessionStorage.setItem("response", responseData);
+  responseData["total emissions with eutrophying"] = responseData["total emissions with eutrophying"].toFixed(2)
   let ecoEffect = document.createElement("li");
-  ecoEffect.innerHTML = "<a href=\"" + "https://caaatdubhacks.pythonanywhere.com/table" + "\"><b>EcoEats Info:</b></a> ";
-  if(responseData.title_used == false){
-    ecoEffct.innerHTML += + "Unable to find data for this specific product, but main ingredient ";
+  if(responseData.title_used == true){
+    ecoEffect.innerHTML = "<a href=\"" + "https://caaatdubhacks.pythonanywhere.com/" +
+     "\"><b>EcoEats Info:</b> " + responseData["food_matched"] + " emits " +
+     responseData["total emissions with eutrophying"] + "kilograms of CO-2 equivalent per kilogram of product" + "<a>"
+  } else {
+    ecoEffect.innerHTML = "<a href=\"" + "https://caaatdubhacks.pythonanywhere.com/" +
+     "\"><b>EcoEats Info:</b> " + "Unable to find data for this specific product, but main ingredient " + responseData["food_matched"] + " emits " +
+     responseData["total emissions with eutrophying"] + "kilograms of CO-2 equivalent per kilogram of product" + "<a>"
   }
-  ecoEffect.innerHTML += responseData["food_matched"] + " emits " +
-     responseData["total emissions with eutrophying"] + " kilograms of CO-2 equivalent per kilogram of product";
   aboutList.appendChild(ecoEffect)
 }
 
