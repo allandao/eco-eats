@@ -36,7 +36,8 @@ class Processor():
 		# “ingredients” : “CULTURED PASTEURIZED GRADE A ORGANIC MILK,
 		# PASTEURIZED ORGANIC CREAM, MICROBIAL ENZYMES”}
 		#XXX hook up to flask later
-		self.request_data = {'title' : 'milk', 'ingredients' : 'dairy milk'}
+		#self.request_data = {'title' : 'milk', 'ingredients' : 'dairy milk'}
+		self.request_data = {'title' : 'no', 'ingredients' : 'dairy milk'}
 		#self.data_path = data_path
 		self.log = setup_logger(logging_level, './log.log')
 		# Dataset from Kaggle
@@ -84,7 +85,7 @@ class Processor():
 		# Simple way: re expression matching
 		# More complex way: NLP processing to match to related foods if
 		# exact food is not found
-		row_stats = {}
+		row_stats = pd.DataFrame({'empty' : []})
 		matches_i = {}
 
 		matches_i = self.match_titles(title, foods, matches_i)
@@ -178,7 +179,7 @@ class Processor():
 		row_stats.
 		'''
 
-		row_stats = {}
+		row_stats = pd.DataFrame({'empty' : []})
 		# bag of words(ingredients)
 		tokenized_ingr = self.tokenize([ingredients])
 		matches_titles = list(matches_i.keys())
@@ -193,7 +194,6 @@ class Processor():
 		zero_freq_vector = [0 for i in range(len(freq_vector))]
 		if (np.array_equal(freq_vector, zero_freq_vector)):
 			self.log.info("\nNo ingredient matches were found!!\n")
-			row_stats = pd.DataFrame({'empty' : []})
 		else :
 			self.log.info("\nIngredient match found!\n")
 			for i, freq in enumerate(freq_vector):
