@@ -26,7 +26,7 @@ function displayData(responseData) {
   responseData["total emissions with eutrophying"] = responseData["total emissions with eutrophying"].toFixed(2);
   sessionStorage.setItem("response", responseData);
   let ecoEffect = document.createElement("li");
-  ecoEffect.innerHTML = "<a href=\"" + "https://caaatdubhacks.pythonanywhere.com/table" + "\"><b>EcoEats Info:</b></a> ";
+  ecoEffect.innerHTML = "<a href=\"" + BASE_URL + "table" + "\"><b>EcoEats Info:</b></a> ";
   if(responseData.title_used == false){
     ecoEffct.innerHTML += + "Unable to find data for this specific product, but main ingredient ";
   }
