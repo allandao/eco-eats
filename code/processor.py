@@ -144,7 +144,7 @@ class Processor():
 					match = True
 		return match
 
-#XXX trying
+#XXX trying to use ingredients if no matches are found with the title
 #	def match_unmatched_ingredients(self, ):
 #		# Need to compare most frequent?? ingredients to every 
 #		# word in every food in food_titles, food title 
