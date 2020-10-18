@@ -7,7 +7,7 @@ let ingredient = encodeURI(qs("#important-information > div").textContent.trim()
 
 
 
-fetch(BASE_URL + "endpoint")
+fetch(BASE_URL + "search?title=" + item + "&ingredients=" +ingredient)
   .then(checkStatus)
   .then(JSON.parse)
   .then(displayData)
@@ -23,15 +23,15 @@ function checkStatus(response) {
 }
 
 function displayData(responseData) {
-  responseData["total emissions with eutrophying"] = responseData["total emissions with eutrophying"].toFixed(2);
+  responseData["total emissions with eutrophying"] = responseData["Total_emissions"].toFixed(2);
   sessionStorage.setItem("response", responseData);
   let ecoEffect = document.createElement("li");
   ecoEffect.innerHTML = "<a href=\"" + BASE_URL + "table" + "\"><b>EcoEats Info:</b></a> ";
   if(responseData.title_used == false){
     ecoEffct.innerHTML += + "Unable to find data for this specific product, but main ingredient ";
   }
-  ecoEffect.innerHTML += responseData["food_matched"] + " emits " +
-     responseData["total emissions with eutrophying"] + " kilograms of CO-2 equivalent per kilogram of product";
+  ecoEffect.innerHTML += responseData["Food product"] + " emits " +
+     responseData["Total_emissions"] + " kilograms of CO-2 equivalent per kilogram of product";
   aboutList.appendChild(ecoEffect)
 }
 

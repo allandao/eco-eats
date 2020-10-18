@@ -4,7 +4,7 @@
 "description": "Displays Carbon footprint of amazon food products",
 "manifest_version": 2,
 "content_scripts" : [{
-     "matches": ["https://www.amazon.com/gp/product/*"],
+     "matches": ["https://www.amazon.com/*"],
 	 "js": ["content.js"]
 }],
 "options_page": "options.html",
