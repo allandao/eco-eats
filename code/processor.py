@@ -188,12 +188,12 @@ class Processor():
 		# highest to lowest frequencies of ingredients words
 		# that match titles
 		highest_match = max(freq_vector)
-		#XXX what if tied??
 		#NOTE: if frequencies are tied, this uses the last i
 		# value in tokenized_matches for row_stats. Not great...
 		zero_freq_vector = [0 for i in range(len(freq_vector))]
 		if (np.array_equal(freq_vector, zero_freq_vector)):
 			self.log.info("\nNo ingredient matches were found!!\n")
+			row_stats = pd.DataFrame({'empty' : []})
 		else :
 			self.log.info("\nIngredient match found!\n")
 			for i, freq in enumerate(freq_vector):
@@ -201,19 +201,6 @@ class Processor():
 					match_title = tokenized_matches[i]
 					match_i = matches_i[match_title]
 					row_stats = df.iloc[match_i]
-		# sort bag of words to highest frequency first
-		# List comprehension
-		# matches_titles = [foods[i] for i in matches_i]
-		# for higher_freq_word in bag_of_words:
-			# for match, df_index in matches_titles:
-				# if higher_freq_word in match:
-					# row_stats = df.iloc[df_index]
-					# break
-
-				# if no matches were found in the ingredients
-				# else
-					# return empty row_stats because no foods matched the
-					# amazon searched food
 		return row_stats
 
 	# SOURCE: https://www.freecodecamp.org/news/an-introduction-to-bag-of-words-and-how-to-code-it-in-python-for-nlp-282e87a9da04/
