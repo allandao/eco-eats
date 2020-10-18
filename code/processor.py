@@ -79,7 +79,7 @@ class Processor():
 		# kaggle data titles
 		foods = df['Food product']
 		ingredients = request_data['ingredients']
-		self.log.info('kaggle foods: {}'.format(foods))
+		self.log.debug('kaggle foods: {}'.format(foods))
 		# iterate over kaggle food titles and try to match it 
 		# Simple way: re expression matching
 		# More complex way: NLP processing to match to related foods if 
@@ -141,11 +141,10 @@ class Processor():
 		for word1 in tokenized_title:
 			for word2 in tokenized_food_title:
 				if word1 == word2:
-					pdb.set_trace()
 					match = True
 		return match
 
-#
+#XXX trying
 #	def match_unmatched_ingredients(self, ):
 #		# Need to compare most frequent?? ingredients to every 
 #		# word in every food in food_titles, food title 
@@ -217,7 +216,6 @@ class Processor():
 					# amazon searched food
 		return row_stats
 
-
 	# SOURCE: https://www.freecodecamp.org/news/an-introduction-to-bag-of-words-and-how-to-code-it-in-python-for-nlp-282e87a9da04/
 	def word_extraction(self, sentence):
 		ignore = ['a', "the", "is"]
@@ -233,10 +231,11 @@ class Processor():
 		for sentence in all_sentences:        
 			cleaned_words = self.word_extraction(sentence)
 			token_words.extend(cleaned_words)
-		#pdb.set_trace()
-		#token_words = sorted(list(set(token_words)))
 		return token_words
 
+	#NOTE: not used right now because it doesn't guarantee the bag_vector
+	# frequencies corresponding to an index in a passed in token 
+	# words array
 	def get_frequency_vector(self, tokenized1, tokenized2):
 		longer_text = max(len(tokenized1), len(tokenized2))
 		bag_vector = np.zeros(longer_text)
@@ -244,8 +243,6 @@ class Processor():
 			for i, word2 in enumerate(tokenized2):
 				if word2 == word1:
 					bag_vector[i] += 1
-					self.log.info("{0}\n{1}\n".format(
-							sentence, numpy.array(bag_vector)))
 		return bag_vector
 
 	def get_ingr_frequency_vector(self, token_matches, token_ingr):
@@ -267,11 +264,19 @@ class Processor():
 					self.log.debug("bag_vector: ".format(bag_vector))
 		return bag_vector
 
+	def get_json_match(self, df, request_data):
+		'''
+		Converts the matching carbon dioxide emissions data to json format
+		'''
+		row_stats = self.match_to_dataset(df, request_data)
+		match = row_stats.to_json()
+		return match
 
 if __name__ == '__main__':
 	data_path = './Food_Production.csv'
 	logging_level = logging.DEBUG
 	proc = Processor(logging_level, data_path)
-	row_stats = proc.match_to_dataset(proc.df, proc.request_data)
+	row_stats = proc.get_json_match(proc.df, proc.request_data)
+	proc.log.debug('JSON row_stats: {}'.format(row_stats))
 		
 
