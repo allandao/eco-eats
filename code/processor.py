@@ -108,6 +108,7 @@ class Processor():
 			#XXX won't work b/c foods isn't a dict like matches_i, with
 			# it's index as a value in dict
 			#self.match_ingredients(df, ingredients, foods)
+			self.log.info('No matches found!!')
 			
 		self.log.debug('row_stats: {}'.format(row_stats))
 		return row_stats
