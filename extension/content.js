@@ -1,5 +1,5 @@
 // The code for the EcoEats extension. Runs in Amazon product pages.
-const BASE_URL = "https://caaatdubhacks.pythonanywhere.com/"
+const BASE_URL = "https://ecoeats.pythonanywhere.com/"
 
 let item = encodeURI(id("productTitle").textContent.trim())
 let aboutList = qs("#feature-bullets > ul")
