@@ -5,9 +5,9 @@ import numpy as np
 import os
 import logging
 import pdb
-import nltk 
+import nltk
 import re
-from nltk.corpus import stopwords 
+from nltk.corpus import stopwords
 set(stopwords.words('english'))
 
 def setup_logger(logging_level, log_file):
@@ -16,15 +16,15 @@ def setup_logger(logging_level, log_file):
 
 	logging.basicConfig(level = logging_level)
 	logger = logging.getLogger(__name__)
-	return logger	
+	return logger
 
 class Processor():
-	''' 
+	'''
 	This class will accept data from requests to Amazon for product
 	titles and ingredients. It will then process that data and match
 	the data to a food and carbon emission from a Kaggle dataset.
 	The dataset can be found here:
-	https://www.kaggle.com/selfvivek/environment-impact-of-food-production 
+	https://www.kaggle.com/selfvivek/environment-impact-of-food-production
 	With more research into carbon emissions and broader datasets on the
 	global impact of farming on climate change, this tool can be expanded
 	to match to even more products on Amazon.
@@ -32,8 +32,8 @@ class Processor():
 
 	#XXX: will need to access kaggle data through server eventually??
 	def __init__(self, logging_level, data_path):
-		# Sample data: {“title”: “SOUR CREAM, 365 WFM, UNFI, 12-16OZ”, 
-		# “ingredients” : “CULTURED PASTEURIZED GRADE A ORGANIC MILK, 
+		# Sample data: {“title”: “SOUR CREAM, 365 WFM, UNFI, 12-16OZ”,
+		# “ingredients” : “CULTURED PASTEURIZED GRADE A ORGANIC MILK,
 		# PASTEURIZED ORGANIC CREAM, MICROBIAL ENZYMES”}
 		#XXX hook up to flask later
 		self.request_data = {'title' : 'milk', 'ingredients' : 'dairy milk'}
@@ -41,11 +41,11 @@ class Processor():
 		self.log = setup_logger(logging_level, './log.log')
 		# Dataset from Kaggle
 		self.df = self.get_df(data_path)
-		
+
 	# Assumes the file Food_Production.csv is in the working directory
 	def get_df(self, data_path):
-		''' 
-		Reads in the csv file for food carbon emissions 
+		'''
+		Reads in the csv file for food carbon emissions
 		'''
 		if os.path.exists(data_path):
 			self.log.info(' Reading file %s', data_path)
@@ -58,15 +58,15 @@ class Processor():
 
 	def match_to_dataset(self, df, request_data):
 		'''
-		Params: 
+		Params:
 			df: a pandas dataframe from a csv with foods and
 				their cabron emissions
-			request_data: a dict containing 'title' for the Amazon food's 
+			request_data: a dict containing 'title' for the Amazon food's
 				title and 'ingredients' containing the searched-for food's
 				ingredients (as strings)
 		Returns:
-			food_stats: a row from df representing different facts about 
-				carbon emissions from the production of the searched 
+			food_stats: a row from df representing different facts about
+				carbon emissions from the production of the searched
 				for food
 
 		This function takes the request data from the Amazon search
@@ -75,28 +75,28 @@ class Processor():
 		'''
 		self.log.debug('df: {}'.format(df))
 		# get request data title
-		title = request_data['title']	
+		title = request_data['title']
 		# kaggle data titles
 		foods = df['Food product']
 		ingredients = request_data['ingredients']
 		self.log.debug('kaggle foods: {}'.format(foods))
-		# iterate over kaggle food titles and try to match it 
+		# iterate over kaggle food titles and try to match it
 		# Simple way: re expression matching
-		# More complex way: NLP processing to match to related foods if 
+		# More complex way: NLP processing to match to related foods if
 		# exact food is not found
 		row_stats = {}
 		matches_i = {}
 
 		matches_i = self.match_titles(title, foods, matches_i)
-		
-		# if only one match was found between amazon product 
+
+		# if only one match was found between amazon product
 		# and dataset
 		if len(matches_i) == 1:
 			match_i = list(matches_i.values())[0]
 			# Integer based row slicing
 			row_stats = df.iloc[match_i]
 
-		# To break ties between matches 
+		# To break ties between matches
 		elif len(matches_i) > 1:
 			# Check ingredients -->
 			row_stats = self.match_ingredients(
@@ -104,19 +104,19 @@ class Processor():
 
 		#XXX what is matches_i is empty???
 		# To find matches through ingredients if none came up
-		else: 
+		else:
 			#XXX won't work b/c foods isn't a dict like matches_i, with
 			# it's index as a value in dict
 			#self.match_ingredients(df, ingredients, foods)
 			self.log.info('No matches found!!')
-			
+
 		self.log.debug('row_stats: {}'.format(row_stats))
 		return row_stats
 
 	def match_titles(self, title, foods, matches_i):
 		'''
 		Loops through kaggle food titles and compare with amazon title.
-		Updates matches_i accordingly. 
+		Updates matches_i accordingly.
 		Ex: title = 'Apple', foods = ['Apples', 'Bananas'], matches_i = {}
 		returns matches_i = {'Apples' : 0}
 		'''
@@ -146,8 +146,8 @@ class Processor():
 
 #XXX trying to use ingredients if no matches are found with the title
 #	def match_unmatched_ingredients(self, ):
-#		# Need to compare most frequent?? ingredients to every 
-#		# word in every food in food_titles, food title 
+#		# Need to compare most frequent?? ingredients to every
+#		# word in every food in food_titles, food title
 #		# with most matches to ingredient wins
 #
 #		#most_freq_ingredient = [0:9]
@@ -166,7 +166,7 @@ class Processor():
 			df: pandas df of Food_Production.csv
 			ingredients: string of ingredients
 				Ex: 'milk, flour, sugar'
-			matches_i: dictionary with matching food title and 
+			matches_i: dictionary with matching food title and
 				its corresponding index in df food_titles
 				Ex: {'milk' : 3, 'soymilk' : 40}
 		Returns:
@@ -185,11 +185,11 @@ class Processor():
 		tokenized_matches = self.tokenize(matches_titles)
 		freq_vector = self.get_ingr_frequency_vector(
 				tokenized_matches, tokenized_ingr)
-		# highest to lowest frequencies of ingredients words 
+		# highest to lowest frequencies of ingredients words
 		# that match titles
 		highest_match = max(freq_vector)
 		#XXX what if tied??
-		#NOTE: if frequencies are tied, this uses the last i 
+		#NOTE: if frequencies are tied, this uses the last i
 		# value in tokenized_matches for row_stats. Not great...
 		zero_freq_vector = [0 for i in range(len(freq_vector))]
 		if (np.array_equal(freq_vector, zero_freq_vector)):
@@ -223,18 +223,18 @@ class Processor():
 		cleaned_text = [w.lower() for w in words if w not in ignore]
 		return cleaned_text
 
-	def tokenize(self, all_sentences):    
-		token_words = []    
+	def tokenize(self, all_sentences):
+		token_words = []
 		# Appends cleaned, tokenized words to the array token_words.
 		# Represents tokenized words of all sentences passed combined into
 		# one array
-		for sentence in all_sentences:        
+		for sentence in all_sentences:
 			cleaned_words = self.word_extraction(sentence)
 			token_words.extend(cleaned_words)
 		return token_words
 
 	#NOTE: not used right now because it doesn't guarantee the bag_vector
-	# frequencies corresponding to an index in a passed in token 
+	# frequencies corresponding to an index in a passed in token
 	# words array
 	def get_frequency_vector(self, tokenized1, tokenized2):
 		longer_text = max(len(tokenized1), len(tokenized2))
@@ -251,8 +251,8 @@ class Processor():
 		each matched title in token_matches
 		Knowing that token_matches was passed first allows us to assume
 		bag_vector indices correspond to token_matches indices
-		Ex: 
-		token_matches = ['apple', 'applemilk'], token_ingr = ['applemilk', 
+		Ex:
+		token_matches = ['apple', 'applemilk'], token_ingr = ['applemilk',
 		'applemilk', 'sugar']
 		bag_vector = [0, 2]
 		'''
@@ -278,5 +278,3 @@ if __name__ == '__main__':
 	proc = Processor(logging_level, data_path)
 	row_stats = proc.get_json_match(proc.df, proc.request_data)
 	proc.log.debug('JSON row_stats: {}'.format(row_stats))
-		
-
