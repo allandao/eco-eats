@@ -1,0 +1,161 @@
+/*
+ * Globals
+ */
+
+/* Links */
+a,
+a:focus,
+a:hover {
+  color: #fff;
+}
+
+/* Custom default button */
+.btn-secondary,
+.btn-secondary:focus {
+  color: #333;
+  text-shadow: none; /* Prevent inheritance from `body` */
+  background-color: #fff;
+  border: .05rem solid #fff;
+}
+
+.btn-secondary:hover {
+    color: #333;
+    background-color: #ECEEEE;
+    border: .05rem solid #fff;
+}
+
+
+/*
+ * Foundation
+ */
+
+html,
+body {
+  height: 100%;
+  background-color: white;
+}
+
+body {
+  display: -ms-flexbox;
+  display: flex;
+  color: #fff;
+  background-image: linear-gradient(105deg, rgba(97, 157, 26, 0.34) 0%, rgba(104, 176, 63, 0.52) 100%), url("https://images.unsplash.com/photo-1533720335246-5d4e8d662010?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2600&q=80");
+  /* rgba(52, 143, 80, 1) 0%, rgba(86, 180, 211, 1) or rgba(86, 171, 47, 1) */
+  box-shadow: inset 0 0 5rem rgba(0, 0, 0, .5);
+  background-size: cover;
+}
+
+.cover-container {
+  min-width: 100%;
+  display: block;
+  text-shadow: 0 .05rem .1rem rgba(0, 0, 0, .5);
+}
+
+
+/*
+ * Header
+ */
+.masthead {
+  margin-bottom: 2rem;
+}
+
+.masthead-brand {
+  margin-bottom: 0;
+}
+
+.nav-masthead .nav-link {
+  padding: .25rem 0;
+  font-weight: 700;
+  color: white;
+  background-color: transparent;
+  border-bottom: .25rem solid transparent;
+}
+
+.nav-masthead .nav-link:hover,
+.nav-masthead .nav-link:focus {
+  border-bottom-color: rgba(255, 255, 255, .4);
+}
+
+.nav-masthead .nav-link + .nav-link {
+  margin-left: 1rem;
+}
+
+.nav-masthead .active {
+  color: #fff;
+  border-bottom-color: #fff;
+}
+
+@media (min-width: 48em) {
+  .masthead-brand {
+    float: left;
+  }
+  .nav-masthead {
+    float: right;
+  }
+}
+
+
+/*
+ * Cover
+ */
+.cover {
+  padding: 0 1.5rem;
+}
+.cover .btn-lg {
+  /*padding: .5rem 1rem; */
+  font-weight: 700;
+}
+
+
+/*
+ * Footer Gradient and text color
+ */
+.mastfoot {
+  color: rgba(255, 255, 255, .5);
+}
+
+.mastfoot p {
+    color: rgba(255, 255, 255, .7);
+}
+
+/*
+ * Main
+ */
+
+main {
+    color: white;
+}
+
+#logo {
+    height: 100px;
+    width: inherit;
+}
+
+/*
+ * Footer
+ */
+
+footer {
+    background-color: #07823dd1;
+    margin: 0 0 5% 0;
+}
+
+/*
+ * Misc. - remove if not used
+ */
+
+.bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+

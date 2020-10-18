@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="Abas, Allan, Angel, Chayton, Ted">
+    <title>Eco-Eats Extension</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <!-- Custom stylesheets -->
+    <link href="../static/cover.css" rel="stylesheet">
+    <link href="../static/about.css" rel="stylesheet">
+
+    <!-- Favico -->
+    <link rel="shortcut icon" href="../static/ecoeats favicon.ico">
+
+    <!-- Smooth Scroll in jQuery for cross browser compatibility -->
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+    $(document).ready(function(){
+      // Add smooth scrolling to all links
+      $("a").on('click', function(event) {
+
+        // Make sure this.hash has a value before overriding default behavior
+        if (this.hash !== "") {
+          // Prevent default anchor click behavior
+          event.preventDefault();
+
+          // Store hash
+          var hash = this.hash;
+
+          // Using jQuery's animate() method to add smooth page scroll
+          // An optional number (600) in front of function specifies the number of milliseconds it takes to scroll to the specified area
+          $('html, body').animate({
+            scrollTop: $(hash).offset().top
+          }, 500 ,function(){
+
+            // Add hash (#) to URL when done scrolling (default click behavior)
+            window.location.hash = hash;
+          });
+        } // End if
+      });
+    });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function(event){
+        // array with texts to type in typewriter
+        var dataText = [ "Dubhacks Blueprint Track: Natural Environment", "How sustainable are your eating habits?", "How much CO2 emission does the production of the food you eat produce?", "Find out more by downloading our extension today!"];
+
+        // type one of the lines onto the screen
+        // keeps calling itself until the text is finished
+        function typeWriter(text, i, fnCallback) {
+        // check if text isn't finished yet
+        if (i < (text.length)) {
+        // add next character to h1
+        document.querySelector("#typewriterHeadline").innerHTML = text.substring(0, i+1) +'<span aria-hidden="true" class="animation"></span>';
+
+        // wait for a while and call this function again for next character
+        setTimeout(function() {
+            typeWriter(text, i + 1, fnCallback)
+            }, 125);
+        }
+            // text finished, call callback if there is a callback function
+        else if (typeof fnCallback == 'function') {
+            // call callback after timeout
+            setTimeout(fnCallback, 5000);
+            }
+        }
+
+        // start a typewriter animation for a text in the dataText array
+        function StartTextAnimation(i) {
+            if (typeof dataText[i] == 'undefined'){
+                setTimeout(function() {
+                StartTextAnimation(0);
+            }, 3000);
+            }
+            // check if dataText[i] exists
+            if (i < dataText[i].length) {
+                // text exists! start typewriter animation
+                typeWriter(dataText[i], 0, function(){
+                // after callback (and whole text has been animated), start next text
+                StartTextAnimation(i + 1);
+                });
+            }
+        }
+        // start the text animation
+        StartTextAnimation(0);
+        });
+    </script>
+
+  </head>
+  <body class="text-center">
+    <div id = "home"></div>
+    <div class = "container">
+      <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+      <header class="masthead mb-auto">
+        <div class="inner">
+          <img src="../static/EcoEats-Icon.png" id="logo" class="masthead-brand"/>
+          <nav class="nav nav-masthead justify-content-center">
+            <a class="nav-link active" href="#">Home</a>
+            <a class="nav-link" href="#about">About</a>
+            <a class="nav-link" href="https://github.com/chaytanc/ecoEats">Download</a>
+          </nav>
+        </div>
+      </header>
+
+      <div class="inner cover">
+        <h1 class="cover-heading">Eco-Eats Browser Extension</h1>
+        <p class="lead" id = "typewriterHeadline">How does the food you eat impact the world?</p>
+        <p class="lead">
+          <a href="https://github.com/chaytanc/ecoEats" class="btn btn-lg btn-secondary">Download Eco-Eats</a>
+        </p>
+      </div>
+
+      <div class="mastfoot mt-auto">
+        <div class="inner">
+          <p>Made by <a href="https://github.com/abis206">Abas</a>,
+          	 <a href="https://github.com/allandao">Allan</a>,
+           	 <a href="https://github.com/AngelMcCrary-Lupson">Angel</a>,
+             <a href="https://github.com/chaytanc">Chaytan</a> and
+             <a href="https://github.com/ironowl-txw">Ted</a> for
+             <a href="https://dubhacks.co">Dubhacks 2020</a>.</p>
+        </div>
+      </div>
+
+      </div>
+
+    <main role="main" class = "w-100 p-3 mx-auto flex-column" id="about">
+        <section>
+            <div class="container">
+                <article class="row align-items-center">
+                    <div class="col-lg-6 order-lg-2 textbox">
+                        <div class = "innertext">
+                            <h2>Making Decisions is Difficult</h2>
+                            <p class="desc">
+                                We know that making ethically sustainable decisions is difficult.
+                                That’s why we provide you with easy to digest information to make
+                                choosing the sustainable option simple.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 order-lg-1"><img src="../static/sustain.png"/></div>
+                </article>
+                <article class="row align-items-center">
+                    <div class="col-lg-6 order-lg-1 textbox">
+                        <div class = "innertext">
+                            <h2>Our Cause</h2>
+                            <p class="desc">
+                                We wanted to tackle the problem of ethical consumption at the
+                                consumer level.
+                            </p>
+                            <p class="desc">
+                                We believe that informing consumers of the environmental impact caused
+                                by the products they consume while shopping online will in turn create
+                                a more ethical and sustainability conscious consumer base.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 order-lg-2"><img src="../static/knowledge.png"/></div>
+                </article>
+                <article class="row align-items-center">
+                    <div class="col-lg-6 order-lg-2 textbox">
+                        <div class = "innertext">
+                            <h2>How Does the Eco Eats Extension Work?</h2>
+                            <p class="desc">
+                                Using the
+                                <a href="https://www.kaggle.com/selfvivek/environment-impact-of-food-production">
+                                Environmental Impact of Food Production </a>dataset from
+                                OurWorldInData and powered by Google’s Natural Language Processing
+                                API, our team created a browser extension that rates a food’s
+                                ethical sustainability score when grocery shopping on Amazon.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 order-lg-1"><img src="../static/eco-tech.png"/></div>
+                </article>
+            </div>
+        </section>
+        <!--</div>-->
+    </main>
+    <footer class = "d-flex w-100 p-3 mx-auto flex-column">
+        <div>
+            <a href="#" class="btn btn-lg btn-secondary" style = "margin: 10px; font-weight: 700;">Download Eco-Eats</a>
+            <a href = "#home" style = "display: block;">Back to the top</a>
+        </div>
+    </footer
+
+    </div>
+</body>
+</html>
