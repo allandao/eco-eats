@@ -29,7 +29,7 @@ function displayData(responseData) {
   console.log(foodTitle);
   ecoEffect.innerHTML = "<a href=\"" + BASE_URL + "table?food=" + foodTitle + "\"><b>EcoEats Info:</b></a> ";
   if(responseData.title_used == false){
-    ecoEffct.innerHTML += + "Unable to find data for this specific product, but main ingredient ";
+    ecoEffect.innerHTML += "Unable to find data for this specific product, but main ingredient ";
   }
   ecoEffect.innerHTML += responseData["Food product"] + " emits " +
      responseData["Total_emissions"] + " kilograms of CO-2 equivalent per kilogram of product";
